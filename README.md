@@ -114,7 +114,7 @@ flowchart TB
 
 The ingestion and query paths use OpenAI `text-embedding-3-small`. Its default output is **1,536 dimensions**, so the Pinecone index should use the matching dimension and a compatible similarity metric such as cosine.
 
-**Important:** the current ingestion flow clears existing vectors before re-indexing. This is a destructive operation. Use a dedicated index for this project and do not share it with unrelated data.
+**Full re-indexing strategy:** The ingestion pipeline clears existing vectors before rebuilding the knowledge base. This refreshes the index from the current documentation crawl instead of retaining stale vectors from a previous run. If ingestion is interrupted after deletion, the index may remain incomplete until the pipeline is run successfully again. Use a dedicated index for this project and do not share it with unrelated data.
 
 ### 4. Streamlit interface — `main.py`
 
@@ -199,7 +199,7 @@ Keep credentials private and never commit your `.env` file.
 
 ### 5. Configure Pinecone
 
-Create a dense index named `langchain-doc-index` with **1,536 dimensions** and **cosine** similarity. Use an index dedicated to this project because ingestion clears existing vectors during a full re-index.
+Create a dense index named `langchain-doc-index` with **1,536 dimensions** and **cosine** similarity. Use an index dedicated to this project. The ingestion pipeline performs a full re-index: it clears existing vectors and then rebuilds the knowledge base from the crawl. If a run fails partway through, rerun the pipeline to rebuild the index; until a successful run completes, the index may contain only a partial dataset.
 
 ### 6. Ingest documentation
 
