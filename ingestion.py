@@ -29,7 +29,7 @@ embeddings = OpenAIEmbeddings(
     chunk_size=50,
     retry_min_seconds=10,
 )
-# vectorstore = Chroma(persist_directory="chroma_db", embedding_function=embeddings)
+ 
 vectorstore = PineconeVectorStore(
     index_name="langchain-doc-index", embedding=embeddings
 )
@@ -38,50 +38,7 @@ tavily_map = TavilyMap(max_depth=5, max_breadth=20, max_pages=1000)
 tavily_crawl = TavilyCrawl()
 
 
-# async def index_documents_async(documents: List[Document], batch_size: int = 50):
-#     """Process documents in batches asynchronously."""
-#     log_header("VECTOR STORAGE PHASE")
-#     log_info(
-#         f"📚 VectorStore Indexing: Preparing to add {len(documents)} documents to vector store",
-#         Colors.DARKCYAN,
-#     )
-
-#     # Create batches
-#     batches = [
-#         documents[i : i + batch_size] for i in range(0, len(documents), batch_size)
-#     ]
-
-#     log_info(
-#         f"📦 VectorStore Indexing: Split into {len(batches)} batches of {batch_size} documents each"
-#     )
-
-#     # Process all batches concurrently
-#     async def add_batch(batch: List[Document], batch_num: int):
-#         try:
-#             await vectorstore.aadd_documents(batch)
-#             log_success(
-#                 f"VectorStore Indexing: Successfully added batch {batch_num}/{len(batches)} ({len(batch)} documents)"
-#             )
-#         except Exception as e:
-#             log_error(f"VectorStore Indexing: Failed to add batch {batch_num} - {e}")
-#             return False
-#         return True
-
-#     # Process batches concurrently
-#     tasks = [add_batch(batch, i + 1) for i, batch in enumerate(batches)]
-#     results = await asyncio.gather(*tasks, return_exceptions=True)
-
-#     # Count successful batches
-#     successful = sum(1 for result in results if result is True)
-
-#     if successful == len(batches):
-#         log_success(
-#             f"VectorStore Indexing: All batches processed successfully! ({successful}/{len(batches)})"
-#         )
-#     else:
-#         log_warning(
-#             f"VectorStore Indexing: Processed {successful}/{len(batches)} batches successfully"
-#         )
+ 
 
 def index_documents(documents: List[Document], batch_size: int = 500):
     log_header("VECTOR STORAGE PHASE")
@@ -149,18 +106,7 @@ async def main():
         }
     )
 
-    # Convert Tavily crawl results to LangChain Document objects
-    # all_docs = []
-    # for tavily_crawl_result_item in res["results"]:
-    #     log_info(
-    #         f"TavilyCrawl: Successfully crawled {tavily_crawl_result_item['url']} from documentation site"
-    #     )
-    #     all_docs.append(
-    #         Document(
-    #             page_content=tavily_crawl_result_item["raw_content"],
-    #             metadata={"source": tavily_crawl_result_item["url"]},
-    #         )
-    #     )
+    
     all_docs = []
     skipped = 0
     for item in res["results"]:
